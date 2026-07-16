@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mueblería Fondar — E-Commerce
 
-## Getting Started
+Sitio e-commerce + landing de marca para Mueblería Fondar, mueblería artesanal
+de madera maciza en Trinidad, Flores, Uruguay. Catálogo de piezas únicas con
+compra online (MercadoPago Checkout Pro) y captación de consultas de muebles a
+medida (WhatsApp + registro en Tricode CMS).
 
-First, run the development server:
+Especificaciones completas: [PROMPT.md](PROMPT.md) · [CONTEXT.md](CONTEXT.md) ·
+[DATA.md](DATA.md) · [BRAND.md](BRAND.md) · [SEO.md](SEO.md)
+
+## Stack
+
+- **Next.js 16** (App Router) + TypeScript
+- **Tailwind CSS 4** + shadcn/ui
+- **Zustand 5** — carrito persistido en localStorage (`fondar-cart`)
+- **react-hook-form + Zod** — formularios con validación cliente y servidor
+- **MercadoPago Checkout Pro** — pagos (server-side only)
+- **Playfair Display + Inter** vía next/font
+
+## Desarrollo
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # completar credenciales
+npm run dev                  # http://localhost:3000
+npm run build                # build de producción
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Estructura
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+src/
+├── app/
+│   ├── (site)/              # Rutas públicas (Navbar + Footer)
+│   │   ├── page.tsx         # Home
+│   │   ├── productos/       # Catálogo + detalle [slug]
+│   │   ├── a-medida/        # Formulario de cotización
+│   │   ├── carrito/         # Carrito + checkout
+│   │   ├── nosotros/        # Historia y marca
+│   │   ├── contacto/        # Contacto general
+│   │   └── pago/            # Retornos MP: exitoso | pendiente | fallido
+│   ├── api/
+│   │   ├── checkout/        # Crea preferencia MercadoPago (server-side)
+│   │   ├── presupuestos/    # Registra presupuesto en CMS (fallo silencioso)
+│   │   ├── productos/estado # Verificación de race condition del carrito
+│   │   └── webhooks/mp/     # Notificaciones de MercadoPago
+│   ├── layout.tsx           # Fuentes, metadatos, GA4, schema LocalBusiness
+│   └── globals.css          # Design tokens (paleta Fondar de BRAND.md)
+├── components/
+│   ├── ui/                  # shadcn/ui
+│   ├── layout/              # Navbar, Footer
+│   ├── sections/            # Secciones del home
+│   ├── product/             # ProductCard, Grid, Filters, Gallery...
+│   ├── forms/               # MedidaForm, ContactoForm
+│   ├── cart/                # CartIcon, CartItem, CartSummary, CartView
+│   └── analytics/           # GoogleAnalytics (GA4)
+├── data/                    # Datos locales del MVP (productos, config...)
+├── hooks/                   # useCart (Zustand), useFilters, useHydrated
+├── lib/
+│   ├── cms.ts               # ÚNICA fuente de datos — ver abajo
+│   ├── mp.ts                # Cliente MercadoPago (solo server)
+│   ├── whatsapp.ts          # Construcción de URLs wa.me
+│   ├── rate-limit.ts        # Rate limiting básico de API routes
+│   └── utils.ts             # formatPrecio (UYU), cn(), helpers
+└── types/                   # Tipos del dominio (espejo de DATA.md)
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Arquitectura clave
 
-## Learn More
+- **`lib/cms.ts` es la única fuente de datos.** Ningún componente importa de
+  `/data/` directamente. Al conectar el Tricode CMS real (fase 2), solo cambia
+  la implementación interna del módulo.
+- **Los productos VENDIDOS no se ocultan** — muestran badge y CTA
+  "¿Te gustó? Pedí uno similar" que deriva a `/a-medida` con la referencia
+  pre-llenada.
+- **El formulario a medida ejecuta doble acción:** abre WhatsApp (visible) y
+  registra el presupuesto en el CMS (transparente, fallo silencioso).
+- **Piezas únicas:** cantidad siempre 1 por ítem. El carrito verifica al abrir
+  y antes del checkout si alguna pieza pasó a VENDIDO (race condition).
+- **`MP_ACCESS_TOKEN` nunca llega al cliente** — el checkout se crea en
+  `/api/checkout` con precios tomados del servidor.
 
-To learn more about Next.js, take a look at the following resources:
+## Variables de entorno
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Ver [.env.example](.env.example). Todas pueden quedar vacías en el MVP: el
+sitio degrada con mensajes amigables (pagos deshabilitados, CMS silencioso,
+GA sin cargar).

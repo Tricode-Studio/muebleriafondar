@@ -1,26 +1,114 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
+
+/* ─── Design tokens · Mueblería Fondar ──────────────────────────────────────
+   Paleta definida en BRAND.md. Los componentes SIEMPRE consumen estas
+   variables — nunca valores hex hardcodeados. */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-playfair);
+
+  /* Tokens de marca */
+  --color-madera: var(--madera);
+  --color-musgo: var(--musgo);
+  --color-vendido: var(--vendido);
+  --color-crema: var(--crema);
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* Paleta Fondar (BRAND.md) */
+  --crema: #fafaf7; /* blanco hueso — fondo principal */
+  --madera: #6b4226; /* marrón cálido — acento madera */
+  --musgo: #3a4a2e; /* verde musgo oscuro — acento natural */
+  --vendido: #b85c38; /* terracota — badge VENDIDO */
+
+  --background: var(--crema);
+  --foreground: #1c1a17; /* texto principal, casi negro */
+  --card: #ffffff;
+  --card-foreground: #1c1a17;
+  --popover: #ffffff;
+  --popover-foreground: #1c1a17;
+  --primary: var(--madera);
+  --primary-foreground: #fafaf7;
+  --secondary: #f0ede6;
+  --secondary-foreground: #1c1a17;
+  --muted: #f2efe9;
+  --muted-foreground: #5c554b; /* 6.2:1 sobre blanco — WCAG AA */
+  --accent: #f0ede6;
+  --accent-foreground: #3a4a2e;
+  --destructive: #a4321f;
+  --border: #e8e4dc; /* bordes sutiles, gris cálido */
+  --input: #e8e4dc;
+  --ring: var(--madera);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans scroll-smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-playfair), Georgia, serif;
+    @apply tracking-tight text-balance;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* Hover de tarjetas: scale sutil + sombra. Respeta prefers-reduced-motion. */
+  .card-hover {
+    @apply transition-[transform,box-shadow] duration-300;
+  }
+  .card-hover:hover {
+    @apply shadow-lg;
+    transform: translateY(-2px) scale(1.01);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card-hover,
+    .card-hover:hover {
+      transition: none;
+      transform: none;
+    }
+    html {
+      scroll-behavior: auto;
+    }
+  }
 }
