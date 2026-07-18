@@ -102,10 +102,23 @@ export function Footer({ contacto, identidad }: FooterProps) {
       </div>
 
       <div className="border-t border-border">
-        <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-muted-foreground sm:px-6">
-          © {new Date().getFullYear()} {identidad.nombreMarca} — Trinidad,
-          Flores, Uruguay. Envíos a todo el país.
-        </p>
+        <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <p>
+            © {new Date().getFullYear()} {identidad.nombreMarca} — Trinidad,
+            Flores, Uruguay. Envíos a todo el país.
+          </p>
+          <p>
+            Desarrollado por{" "}
+            <a
+              href="https://www.tricode.studio/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium hover:text-madera hover:underline"
+            >
+              Tricode.Studio
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );

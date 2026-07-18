@@ -9,8 +9,7 @@ export const siteConfig: SiteConfig = {
     titulo: "Muebles de madera maciza, hechos para durar",
     subtitulo:
       "Artesanía en madera maciza desde Trinidad, Flores. Piezas únicas y muebles a medida con envíos a todo Uruguay.",
-    imagenFondo:
-      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1920&q=80",
+    imagenFondo: "/fachada.jpg",
     ctaPrimarioTexto: "Ver catálogo",
     ctaSecundarioTexto: "Muebles a medida",
   },
